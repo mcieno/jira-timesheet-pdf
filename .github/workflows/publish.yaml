@@ -1,0 +1,41 @@
+on:
+  release:
+    types: [published]
+
+name: Publish
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ github.repository }}
+        id: meta
+
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: |
+            linux/386
+            linux/amd64
+            linux/arm64
