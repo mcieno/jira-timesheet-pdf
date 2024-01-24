@@ -1,8 +1,10 @@
+# syntax=docker/dockerfile:1
 FROM python:3.12
 
-COPY requirements.txt /
-RUN pip install -r requirements.txt
+RUN --mount=type=bind,source=requirements.txt,target=/tmp/requirements.txt \
+    pip install -r /tmp/requirements.txt
 
-COPY main.py /
+COPY jira-timesheet-pdf /
 
-ENTRYPOINT ["python", "/main.py"]
+ENTRYPOINT ["/jira-timesheet-pdf"]
+CMD ["--help"]
