@@ -2,6 +2,14 @@
 
 Simple script to generate monthly timesheets based on Jira's worklog.
 
+<p align="center">
+  <img
+    width="1185"
+    alt="Example timesheet"
+    src="https://github.com/mcieno/jira-timesheet-pdf/assets/30049418/af2fa171-bc17-4b7c-8d28-03a13c8dbf5b"
+    />
+</p>
+
 Adapted from [jordanjambazov/jira-timesheet-pdf](https://github.com/jordanjambazov/jira-timesheet-pdf).
 
 ## Usage
@@ -49,13 +57,3 @@ docker run --rm --env-file=.env jira-timesheet-pdf \
     --yyyy-mm 2024-01 \
     > timesheet.pdf
 ```
-
-### Example output
-
-<p align="center">
-  <img
-    width="1185"
-    alt="Example timesheet"
-    src="https://github.com/mcieno/jira-timesheet-pdf/assets/30049418/af2fa171-bc17-4b7c-8d28-03a13c8dbf5b"
-    />
-</p>
