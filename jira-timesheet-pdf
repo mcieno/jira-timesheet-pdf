@@ -95,7 +95,7 @@ def generate_report(
             )
 
             data[-1].append(
-                f'{time_spent_seconds / 3600:.1f}' if time_spent_seconds > 0 else ''
+                f'{time_spent_seconds / 3600:.2f}' if time_spent_seconds > 0 else ''
             )
 
     elements.append(
