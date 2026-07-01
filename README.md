@@ -42,7 +42,7 @@ the container:
 docker run --rm --env-file=.env -v "$(pwd):/app" -w /app -u $(id -u):$(id -g) jira-timesheet-pdf \
     --server=example.atlassian.net \
     --auth-email=user@example.com \
-    --user='John Doe' \
+    --users='john.doe@example.test' --users='John Doe' \
     --yyyy-mm 2024-01
 ```
 
@@ -53,7 +53,7 @@ docker run --rm --env-file=.env jira-timesheet-pdf \
     --output=/dev/stdout \
     --server=example.atlassian.net \
     --auth-email=user@example.com \
-    --user='John Doe' \
+    --users='john.doe@example.test' --users='John Doe' \
     --yyyy-mm 2024-01 \
     > timesheet.pdf
 ```

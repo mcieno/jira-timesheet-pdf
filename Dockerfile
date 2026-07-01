@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12
+FROM python:3.14
 
 RUN --mount=type=bind,source=requirements.txt,target=/tmp/requirements.txt \
     pip install -r /tmp/requirements.txt

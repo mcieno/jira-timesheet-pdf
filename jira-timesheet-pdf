@@ -129,16 +129,16 @@ def generate_report(
 
 def get_worklogs_by_issue(
     client: jira.JIRA,
-    user: str,
+    users: list[str],
     date_from: datetime.date,
     date_to: datetime.date,
 ) -> dict[jira.resources.Issue, list[jira.resources.Worklog]]:
     issues = client.search_issues(f'''
-        worklogAuthor = '%s'
+        ({' OR '.join(f"""worklogAuthor = '{user.replace("'", r"\'")}'""" for user in users)})
         AND worklogDate >= {json.dumps(date_from.strftime('%Y-%m-%d'))}
         AND worklogDate <= {json.dumps(date_to.strftime('%Y-%m-%d'))}
         ORDER BY created ASC
-    ''' % user.replace("'", r"\'"))
+    ''')
 
     logging.info(f'Found {len(issues)} issues')
 
@@ -149,10 +149,10 @@ def get_worklogs_by_issue(
         logging.info(f'Issue {issue}: found {len(worklogs)} worklogs')
 
         worklogs = list(filter(
-            lambda worklog: worklog.author.displayName == user,
+            lambda worklog: worklog.author.displayName in users or worklog.author.emailAddress in users,
             worklogs,
         ))
-        logging.info(f'Issue {issue}: found {len(worklogs)} worklogs by user {user}')
+        logging.info(f'Issue {issue}: found {len(worklogs)} worklogs by users {users}')
 
         worklogs = list(filter(
             lambda worklog: date_from <= datetime.datetime.strptime(worklog.started, JIRA_DATETIME_FORMAT).date() <= date_to,
@@ -171,11 +171,11 @@ def main(args) -> None:
     month_start = datetime.date(year, month, 1)
     month_last = datetime.date(year, month, calendar.monthrange(year, month)[1])
 
-    logging.info(f'Generating worklog report from {month_start} to {month_last} for user {args.user}')
+    logging.info(f'Generating worklog report from {month_start} to {month_last} for users {args.users}')
 
     worklogs_by_issue = get_worklogs_by_issue(
         jira.JIRA(f'https://{args.server}', basic_auth=(args.auth_email, args.auth_token)),
-        args.user,
+        args.users,
         month_start,
         month_last,
     )
@@ -219,10 +219,11 @@ if __name__ == "__main__":
         help='The YYYY-MM formatted month for which to generate the report (defaults to current month)',
     )
     parser.add_argument(
-        '--user',
+        '--users',
+        action='append',
         type=str,
         required=True,
-        help='The display name of the user for which to generate the report; e.g. John Doe',
+        help='The emails or display names of the users for which to generate the report; e.g. John Doe',
     )
     parser.add_argument(
         '--output',
